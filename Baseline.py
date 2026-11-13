@@ -83,7 +83,36 @@ def lcs_three(A, B, C):
 
 # finds the longest cubic sequence of S
 def longest_cubic_subsequence(S):
-        return
+        
+        n = len(S)
+
+        #stores the best repeated block
+        best_block = []
+
+        #stores the length of the best repeated block
+        best_length = 0
+
+        # Tries every possible pair of dividing positions.
+        for p in range(n + 1):
+            for q in range(p, n + 1):
+        
+                # Splits original sequence into three sections.
+                A = S[:p]
+                B = S[p:q]
+                C = S[q:]
+        
+                # Finds longest subsequence while keeping the original order.
+                block = lcs_three(A, B, C)
+        
+                # Update best block if longer one is found
+                if len(block) > best_length:
+                    best_length = len(block)
+                    best_block = block
+        
+         # Repeats best block three times to form cubic subsequence
+        cubic = best_block * 3
+        
+        return best_block, cubic
 
 
 def main():
