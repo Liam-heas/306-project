@@ -116,7 +116,22 @@ def longest_cubic_subsequence(S):
 
 
 def main():
-    return
+    # Read the input sequence from a file if a filename is provided.
+    # Otherwise, read the sequence from standard input
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], "r") as file:
+            S = file.read().strip()
+    else:
+        S = sys.stdin.read().strip()
+
+    # Runs algorithm to find longest cubic subsequence.
+    block, cubic = longest_cubic_subsequence(S)
+
+    # Prints original sequence, repeated block, and the final result.
+    print("Input sequence:", S)
+    print("Repeated block X:", "".join(block))
+    print("Longest cubic subsequence:", "".join(cubic))
+    print("Length:", len(cubic))
 
 
 if __name__ == "__main__":
