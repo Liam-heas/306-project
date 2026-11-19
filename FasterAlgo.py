@@ -151,3 +151,32 @@ def lcs3_bounded(A, B, C, D):
 
     #combines all the characters into one string
     return "".join(res)
+
+#calculates the number of occurences of each character throughout the input string
+def _prefix_counts(S):
+    
+    pref = {}
+
+    #loops through every unique character in the input string
+    for c in set(S):
+
+        arr= [0] * (len(S) + 1)
+
+        #count for number of times current character has appeared
+        t = 0
+
+        #iterate through every character in S where i = index, ch =character at index i
+        for i, ch in enumerate(S):
+
+            #checks to see if current character is the same as character being counted
+            if ch == c:
+                t += 1
+
+            #stores current occurence count in prefix array
+            arr[i + 1] = t
+
+        #saves completed prefix count array in dictionary
+        pref[c] = arr
+
+    #returns dictionary containing the prefix counts for evry unique character
+    return pref
