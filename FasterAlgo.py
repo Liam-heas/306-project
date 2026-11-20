@@ -180,3 +180,138 @@ def _prefix_counts(S):
 
     #returns dictionary containing the prefix counts for evry unique character
     return pref
+
+
+#
+def feasible(S, p, pref=None):
+
+    #stores length of input string
+    n = len(S)
+
+    #checks minimum block length
+    if p <= 0:
+        return ""
+
+    #calculate show many characters can be deleted from string while still allowing three copies
+    k = n - 3 * p
+
+    #checks to see if input is too short
+    if k < 0:
+        return None
+
+    #calculates prefix count
+    if pref is None:
+        pref = _prefix_counts(S)
+
+    #list of unique characters
+    letters = list(pref)
+
+    #tests possible positons for first cut in string
+    for s1 in range(p, min(p + k, n - 2 * p) + 1):
+
+        #tests possible lengths for second piece
+        for s2 in range(p, min(p + k, n - s1 - p) + 1):
+
+            #calculates end of second piece
+            e = s1 + s2
+
+            #counter for maximum length of common subsequence
+            tot = 0
+
+            #iterates through every unique character
+            for c in letters:
+                
+                #calclulates how many times current character appears in each of the three pieces and adds
+                #smalles count
+                pc = pref[c]
+                tot += min(pc[s1], pc[e] - pc[s1], pc[n] - pc[e])
+
+            #checks to see if total number of matching characters is smaller than required block length
+            if tot < p:
+                continue
+
+            #creates three pieces of the original string with A being shortest and C longest
+            A, B, C = sorted([S[:s1], S[s1:e], S[e:]], key=len)
+
+            #calls the LCS algorithm
+            X = lcs3_bounded(A, B, C, len(A) - p)
+
+            #checks to see if it found a valid subsequence
+            if X is not None and len(X) >= p:
+                return X
+            
+    #returns none if it didnt find a valid subsequence
+    return None
+
+
+
+
+def longest_cubic_subsequence(S):
+
+    #length of input string
+    n = len(S)
+
+    #max length of X
+    top = n // 3
+
+    #if fewer then 3 char return empty string
+    if top == 0:
+        return ""
+    
+    #checks to see if string is made up of three identical blocks
+    if n % 3 == 0 and S[:top] == S[top:2 * top] == S[2 * top:]:
+        return S[:top]
+
+    #gets prefic counts for every unique character in string
+    pref = _prefix_counts(S)
+
+    #checks maximum possible block length
+    X = feasible(S, top, pref)
+
+    #ifit finds a valid block nothing else needs to be considered
+    if X is not None:
+        return X
+
+    
+    # F1: doubling to find a feasible p, then binary search the gap
+    fail_p, step = top, 1
+
+    #goes until a feasable length is found
+    while True:
+
+        #calculates the next block length to test
+        p = max(0, top - step)
+
+        #tests to see if block is possible
+        X = feasible(S, p, pref)
+
+        #checks whether valid block has been found
+        if X is not None:
+            good_p = len(X)
+            break
+
+        #If the feasibility test fails will record the current block length as an unsuccessful value
+        fail_p = p
+        step *= 2
+
+    #stores best block 
+    best = X
+
+    #Continues searching while there is at least one integer block length between the successful and unsuccessful boundaries.
+    while fail_p - good_p > 1:
+
+        #calculates midpoint between successful and unsuccessful boundaries
+        mid = (fail_p + good_p) // 2
+
+        #tests whether it can be consutrctued 
+        X = feasible(S, mid, pref)
+
+        #checks to see if it can be done
+        if X is not None:
+            best, good_p = X, len(X)
+        else:
+            fail_p = mid
+
+    #resturns longest cubic block
+    return best
+
