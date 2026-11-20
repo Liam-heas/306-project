@@ -315,3 +315,20 @@ def longest_cubic_subsequence(S):
     #resturns longest cubic block
     return best
 
+
+def main():
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], "r") as f:
+            S = f.read().strip()
+    else:
+        S = sys.stdin.read().strip()
+    X = longest_cubic_subsequence(S)
+    print("Input sequence:", S)
+    print("Repeated block X:", X)
+    print("Longest cubic subsequence:", X * 3)
+    print("Length:", 3 * len(X))
+
+
+
+if __name__ == "__main__":
+    main()
